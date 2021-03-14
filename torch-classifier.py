@@ -72,3 +72,28 @@ for epoch in range(2): # loop over dataset multiple times
             running_loss = 0.0
 
 print('Fin training')
+
+# Save training output
+PATH = './cifar_net.pth'
+torch.save(net.state_dict(), PATH)
+
+# Check if network learned anything
+dataiter = iter(testloader)
+images, label = dataiter.next()
+
+# Print what the actual images are
+print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(4)))
+
+# Load back in saved model
+net = Net()
+net.load_state_dict(torch.load(PATH))
+
+# See what the nn thinks the examples are
+outputs = net(images)
+
+# Outputs are energies, the higher the energy, the higher the network's confidence
+_, predicted = torch.max(outputs, 1)
+
+# Print what the nn thinks they are
+print('Predicted: ', ' '.join('%5s' % classes[predicted[j]]
+                              for j in range(4)))
